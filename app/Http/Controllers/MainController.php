@@ -12,9 +12,8 @@ class MainController extends Controller
         return view('home');
     }
 
-    public function generateExercises(Request $request)
+    public function generateExercises(Request $request): View
     {
-        // TODO: form validation
         $request->validate([
             'check_sum'            => 'required_without_all:check_subtraction,check_multiplication,check_division',
             'check_subtraction'    => 'required_without_all:check_sum,check_multiplication,check_division',
@@ -30,7 +29,6 @@ class MainController extends Controller
         if ($request->check_sum) {
             $operations[] = "sum";
         }
-
         if ($request->check_subtraction) {
             $operations[] = "subtraction";
         }
@@ -95,8 +93,10 @@ class MainController extends Controller
                 'solution' => "$exercise $solution",
             ];
         }
-        dd($exercises);
+
+        return view('operations', ['exercises' => $exercises]);
     }
+
     public function printExercises()
     {
         echo "Imprimir Exercícios no navegador";
