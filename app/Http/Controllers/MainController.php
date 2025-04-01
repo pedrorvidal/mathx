@@ -50,59 +50,84 @@ class MainController extends Controller
         $exercises = [];
 
         for ($i = 1; $i <= $number_exercises; $i++) {
-            $operation = $operations[array_rand($operations)];
-            $number1 = rand($min, $max);
-            $number2 = rand($min, $max);
-
-            $exercise = '';
-            $solution = '';
-
-            switch ($operation) {
-                case 'sum':
-                    $solution = $number1 + $number2;
-                    $exercise = "$number1 + $number2 = ";
-                    break;
-                case 'subtraction':
-                    $solution = $number1 - $number2;
-                    $exercise = "$number1 - $number2 = ";
-                    break;
-                case 'multiplication':
-                    $solution = $number1 * $number2;
-                    $exercise = "$number1 x $number2 = ";
-                    break;
-                case 'division':
-                    // avoid division by zero
-                    if ($number2 == 0) {
-                        $number2 = 1;
-                    }
-                    $solution = $number1 / $number2;
-                    $exercise = "$number1 : $number2 = ";
-                    break;
-                default:
-                    break;
-            }
-
-            if (is_float($solution)) {
-                $solution = round($solution, 2);
-            }
-
-            $exercises[] = [
-                'operation' => $operation,
-                'exercise_number' => $i,
-                'exercise' => $exercise,
-                'solution' => "$exercise $solution",
-            ];
+            $exercises[] = $this->generateExercise($i, $operations, $min, $max);
         }
+        // place exercises in session
+        // $request->session()->put('exercises', $exercises);
+        session(['exercises' => $exercises]);
 
         return view('operations', ['exercises' => $exercises]);
     }
 
     public function printExercises()
     {
-        echo "Imprimir Exercícios no navegador";
+        // check if exercises are in session
+        if (!session()->has('exercises')) {
+            return redirect()->route('home');
+        }
+        $exercises = session('exercises');
+        echo "<pre>";
+        echo '<h1>Exercícios de Matemática (' . env('APP_NAME') . ')</h1>';
+        echo "<hr>";
+        foreach ($exercises as $exercise) {
+            echo '<h2><small>' . str_pad($exercise['exercise_number'], 3, '0', STR_PAD_LEFT) . '</small> >> ' . $exercise['exercise'] . '</h2>';
+        }
+        echo "<hr>";
+        echo "<small>Soluções</small><br>";
+        foreach ($exercises as $exercise) {
+            echo '<small>' . str_pad($exercise['exercise_number'], 3, '0', STR_PAD_LEFT) . ' >> ' . $exercise['solution'] . '</small><br>';
+        }
+        echo "</pre>";
     }
     public function exportExercises()
     {
         echo "Exportar exercícios para um arquivo de texto";
+    }
+
+    private function generateExercise($i, $operations, $min, $max): array
+    {
+
+        $operation = $operations[array_rand($operations)];
+        $number1 = rand($min, $max);
+        $number2 = rand($min, $max);
+
+        $exercise = '';
+        $solution = '';
+
+        switch ($operation) {
+            case 'sum':
+                $solution = $number1 + $number2;
+                $exercise = "$number1 + $number2 = ";
+                break;
+            case 'subtraction':
+                $solution = $number1 - $number2;
+                $exercise = "$number1 - $number2 = ";
+                break;
+            case 'multiplication':
+                $solution = $number1 * $number2;
+                $exercise = "$number1 x $number2 = ";
+                break;
+            case 'division':
+                // avoid division by zero
+                if ($number2 == 0) {
+                    $number2 = 1;
+                }
+                $solution = $number1 / $number2;
+                $exercise = "$number1 : $number2 = ";
+                break;
+            default:
+                break;
+        }
+
+        if (is_float($solution)) {
+            $solution = round($solution, 2);
+        }
+
+        return [
+            'operation' => $operation,
+            'exercise_number' => $i,
+            'exercise' => $exercise,
+            'solution' => "$exercise $solution",
+        ];
     }
 }
