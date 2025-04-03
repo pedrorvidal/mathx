@@ -70,12 +70,12 @@ class MainController extends Controller
         echo '<h1>Exercícios de Matemática (' . env('APP_NAME') . ')</h1>';
         echo "<hr>";
         foreach ($exercises as $exercise) {
-            echo '<h2><small>' . str_pad($exercise['exercise_number'], 3, '0', STR_PAD_LEFT) . '</small> >> ' . $exercise['exercise'] . '</h2>';
+            echo '<h2><small>' . $exercise['exercise_number'] . '</small> >> ' . $exercise['exercise'] . '</h2>';
         }
         echo "<hr>";
         echo "<small>Soluções</small><br>";
         foreach ($exercises as $exercise) {
-            echo '<small>' . str_pad($exercise['exercise_number'], 3, '0', STR_PAD_LEFT) . ' >> ' . $exercise['solution'] . '</small><br>';
+            echo '<small>' . $exercise['exercise_number'] . ' >> ' . $exercise['solution'] . '</small><br>';
         }
         echo "</pre>";
     }
@@ -125,7 +125,7 @@ class MainController extends Controller
 
         return [
             'operation' => $operation,
-            'exercise_number' => $i,
+            'exercise_number' => str_pad($i, 3, '0', STR_PAD_LEFT),
             'exercise' => $exercise,
             'solution' => "$exercise $solution",
         ];
