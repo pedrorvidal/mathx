@@ -81,20 +81,17 @@ class MainController extends Controller
     }
     public function exportExercises()
     {
-        // check if exercises are in session
         if (!session()->has('exercises')) {
             return redirect()->route('home');
         }
         $exercises = session('exercises');
 
-        //create file to download with exercises
         $filename = 'exercises_' . env('APP_NAME') . '_' . date('Y-m-d_H-i-s') . '.txt';
 
         $content = '';
         foreach ($exercises as $exercise) {
             $content .= $exercise['exercise_number'] . ' >> ' . $exercise['exercise'] . "\n";
         }
-        // solutions
         $content .= "\n\nSoluções\n" . str_repeat('-', 20) . "\n";
         foreach ($exercises as $exercise) {
             $content .= $exercise['exercise_number'] . ' >> ' . $exercise['solution'] . "\n";
@@ -129,7 +126,6 @@ class MainController extends Controller
                 $exercise = "$number1 x $number2 = ";
                 break;
             case 'division':
-                // avoid division by zero
                 if ($number2 == 0) {
                     $number2 = 1;
                 }
